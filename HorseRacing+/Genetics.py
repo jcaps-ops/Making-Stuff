@@ -1,4 +1,5 @@
-
-
+#a1 
+import random
 def CreateGene():
-    pass
+    maxstamina = random.randrange(5,10)
+    speed = 
