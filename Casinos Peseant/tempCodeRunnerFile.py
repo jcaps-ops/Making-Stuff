@@ -1,1 +1,0 @@
-Chips=Chip,Cash=Cash,Chipmult = Chipmult,sinkhole = SinkHole

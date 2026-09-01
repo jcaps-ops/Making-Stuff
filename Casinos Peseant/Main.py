@@ -3,7 +3,8 @@ import random
 deck = ["1","2","3","4","5","6","7","8","9","10"]
 Dealers_Deck = ["1","2","3","4","5","6","7","8","9","10"]
 Boons = []
-potentialboons = []
+potentialboons = ["Chip mult","Token+"]
+pot_deck = ["-3","Jocker","Cashback"]
 SinkHole = 75
 total = 0
 dealer_total = 0
@@ -79,10 +80,50 @@ def blackjack(deck=deck,total=total,cash=Cash,Dealerdeck = Dealers_Deck,dealer_t
 def Dealchips(Chips=Chip,Cash=Cash,Chipmult = Chipmult,sinkhole = SinkHole):
     Chips = round(Chipmult * (Cash/sinkhole))
     return Chips
-def store():
-    pass
+def store(chip=Chip,boons=Boons,pot_boon=potentialboons,deck=deck,pot_deck=pot_deck):
+    storeop = []
+    for x in range (0,3):
+        if random.randrange(1,2) == 1:
+            storeop.append(pot_deck[random.randrange(0,len(pot_deck))])
+        else:
+            storeop.append(pot_boon[random.randrange(0,len(pot_boon))])
+    x = storeop[0]
+    xpr = figurePrice(x)
+    y = storeop[1]
+    ypr = figurePrice(y)
+    z = storeop[2]
+    zpr= figurePrice(z)
+    print("Here are you options if you do not want to buy 1 type exit.")
+    print(f"1-{x} for {xpr} chips\n2-{y} for {ypr} chips \n 3-{z} for {zpr} chips")
+    while True:
+        ply_inp = input("")
+        if ply_inp == "1":
+            pass
+
+    
+    print()
+def figurePrice(Item):
+    if Item == "Chip,mult":
+        price = 5
+    elif Item == "Token+":
+        price = 3
+    elif Item == "cash+":
+            price = 3
+    elif Item == "Daily double+":
+        price = 3
+    elif Item == "-3":
+        price = 2
+    elif Item == "Jocker":
+        price = 1
+    elif Item == "Cashback":
+        price = 5
+
+    return price
         
-        
+
+potentialboons = ["Chip mult","Token+","cash+","Daily Double"]
+pot_deck = ["-3","Jocker","Cashback"]
+
 while True:
     Cash = blackjack(deck,total,Cash,Dealers_Deck,dealer_total,SinkHole)
     if Cash == 0:
