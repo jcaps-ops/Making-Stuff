@@ -4,7 +4,7 @@ deck = ["1","2","3","4","5","6","7","8","9","10"]
 Dealers_Deck = ["1","2","3","4","5","6","7","8","9","10"]
 Boons = []
 potentialboons = ["Chip mult","Token+"]
-pot_deck = ["-3","Jocker","Cashback"]
+pot_deck = ["-3","Jocker","Cashback","Death","Twins"]
 SinkHole = 75
 total = 0
 dealer_total = 0
@@ -14,12 +14,28 @@ Chipmult = 5
 def roll(deck):
     card = deck[random.randrange(0,len(deck))]
     return card
-def calculate(deck,total):
+def calculate(deck=deck,total=total,cash=Cash,chips=Chip,Quota=SinkHole):
     card = roll(deck)
     try:
         total += int(card)
     except:
-        print("It Failed")
+        if card == "Cashback":
+            cash += 20
+            print("You drew your cash back card")
+        if card == "Twins":
+            card1 = deck[random.randrange(0,len(deck))]
+            deck.append(card1)
+            print(f"You drew the twins card it duplicated the {card1}")
+        if card == "Joker":
+            jokervaluechip = random.randrange(-5,10)
+            JVC = random.randrange(-10,75)
+            chips += jokervaluechip
+            cash += JVC
+            print(f"You drew the Joker card it gave you {jokervaluechip} chips and {JVC} cash")
+        if card == "Death":
+            Quota = Quota / 2
+            print(f"You drew Death it cut your qouta in half")
+        pass
     return total
     
 def blackjack(deck=deck,total=total,cash=Cash,Dealerdeck = Dealers_Deck,dealer_total = dealer_total,SinkHole=SinkHole):
@@ -93,12 +109,55 @@ def store(chip=Chip,boons=Boons,pot_boon=potentialboons,deck=deck,pot_deck=pot_d
     ypr = figurePrice(y)
     z = storeop[2]
     zpr= figurePrice(z)
-    print("Here are you options if you do not want to buy 1 type exit.")
+    print("Here are you options if you do not want to buy something type exit.")
     print(f"1-{x} for {xpr} chips\n2-{y} for {ypr} chips \n 3-{z} for {zpr} chips")
     while True:
         ply_inp = input("")
-        if ply_inp == "1":
-            pass
+        if ply_inp == "Exit" or ply_inp == "exit" or ply_inp == "e" or ply_inp == "E":
+            break
+        if ply_inp == "1" or ply_inp == x:
+            if zpr <= chips:
+                if x in pot_boon:
+                    chips -= xpr
+                    boons.append(x)
+                    pot_boon.remove(x)
+                elif x in pot_deck:
+                    chips -= xpr
+                    deck.append(x)
+                    pot_deck.remove(x)
+                else:
+                    print("What how did you do this")
+            else:
+                print("You can not afford this")
+        elif ply_inp == "2" or ply_inp == y:
+            if zpr <= chips:
+                if y in pot_boon:
+                    chips -= ypr
+                    boons.append(y)
+                    pot_boon.remove(y)
+                elif y in pot_deck:
+                    chips -= ypr
+                    deck.append(y)
+                    pot_deck.remove(y)
+                else:
+                    print("What how did you do this")
+            else:
+                print("You can not afford this")
+        elif ply_inp == "3" or ply_inp == z:
+            if zpr <= chips:
+                if z in pot_boon:
+                    chips -= zpr
+                    boons.append(z)
+                    pot_boon.remove(z)
+                elif x in pot_deck:
+                    chips -= zpr
+                    deck.append(z)
+                    pot_deck.remove(z)
+                else:
+                    print("What how did you do this")
+            else:
+                print("You can not afford this")
+            
 
     
     print()
@@ -117,6 +176,10 @@ def figurePrice(Item):
         price = 1
     elif Item == "Cashback":
         price = 5
+    elif Item == "Death":
+            price = 7
+    elif Item == "Twins":
+            price = 10
 
     return price
         
@@ -132,6 +195,8 @@ while True:
         break
     chips = Dealchips()
     print(f"You currently have {chips} chips.")
+    store()
+    print(f"This is your deck {deck} \n This are your boons {Boons}")
     SinkHole = SinkHole * 1.5
     SinkHole = round(SinkHole)
 print("YOU LOSE")
