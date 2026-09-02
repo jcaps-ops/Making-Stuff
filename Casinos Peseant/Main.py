@@ -4,69 +4,77 @@ deck = ["1","2","3","4","5","6","7","8","9","10"]
 Dealers_Deck = ["1","2","3","4","5","6","7","8","9","10"]
 Boons = []
 potentialboons = ["Chip mult","Token+"]
-pot_deck = ["-3","Jocker","Cashback","Death","Twins"]
+pot_deck = ["-3","Joker","Cashback","Death","Twins"]
 SinkHole = 75
 total = 0
 dealer_total = 0
 Cash = 50
 Chip = 0
-Chipmult = 5
+Chipmult = 3
 def roll(deck):
     card = deck[random.randrange(0,len(deck))]
     return card
-def calculate(deck=deck,total=total,cash=Cash,chips=Chip,Quota=SinkHole):
+def calculate(deck,total):
     card = roll(deck)
+    print(card)
     try:
         total += int(card)
+        print("tried")
     except:
-        if card == "Cashback":
-            cash += 20
-            print("You drew your cash back card")
-        if card == "Twins":
+        pass
+    return total,card
+def cardeffectcalc(card,deck=deck,Cash=Cash,Chip=Chip,Quota=SinkHole):
+    if card == "Cashback":
+            Cash += 20
+            print("You drew your Cash back card")
+    elif card == "Twins":
             card1 = deck[random.randrange(0,len(deck))]
             deck.append(card1)
             print(f"You drew the twins card it duplicated the {card1}")
-        if card == "Joker":
+    elif card == "Joker":
             jokervaluechip = random.randrange(-5,10)
             JVC = random.randrange(-10,75)
-            chips += jokervaluechip
-            cash += JVC
-            print(f"You drew the Joker card it gave you {jokervaluechip} chips and {JVC} cash")
-        if card == "Death":
+            Chip += jokervaluechip
+            Cash += JVC
+            print(f"You drew the Joker card it gave you {jokervaluechip} Chip and {JVC} Cash")
+    elif card == "Death":
             Quota = Quota / 2
             print(f"You drew Death it cut your qouta in half")
-        pass
-    return total
+            print(f"Your current quote is {Quota}")
+    return deck,total,Cash,Chip,SinkHole
     
-def blackjack(deck=deck,total=total,cash=Cash,Dealerdeck = Dealers_Deck,dealer_total = dealer_total,SinkHole=SinkHole):
+def blackjack(deck=deck,total=total,Cash=Cash,Dealerdeck = Dealers_Deck,dealer_total = dealer_total,SinkHole=SinkHole,Chip = Chip):
     print(f"The current quote you have to reach is {SinkHole}$.")
     for x in range(0,3):
-        if cash == 0:
+        if Cash == 0:
             pass
         else:
             total = 0
             dealer_total = 0
             print("New game")
-            print(f"You currently have {cash}$")
+            print(f"You currently have {Cash}$")
             while True:
                 bet_input = input("Please put in bet:")
                 try:
                     bet = int(bet_input)
-                    if bet <= cash:
+                    if bet <= Cash:
                         break
                     else:
-                        print("You put a bet greater than the amount of cash you have")
+                        print("You put a bet greater than the amount of Cash you have")
                 except:
                     print("That is not an Accepted number")
-            total = calculate(deck,total)
-            total = calculate(deck,total)
+            total,card = calculate(deck,total)
+            deck,total,Cash,Chip,SinkHole = cardeffectcalc(card)
+            total,card = calculate(deck,total)
+            deck,total,Cash,Chip,SinkHole = cardeffectcalc(card)
             print(f"Your total is {total}")
             while True:
                 action = input("Stand or Hit:")
                 if action == "Stand" or action == "stand":
                     break
                 if action == "Hit" or action == "hit":
-                    total = calculate(deck,total)
+                    total,card = calculate(deck,total)
+                    deck,total,Cash,Chip,SinkHole = cardeffectcalc(card)
                     print(total)
                     if total > 21:
                         print("You Busted")
@@ -74,29 +82,34 @@ def blackjack(deck=deck,total=total,cash=Cash,Dealerdeck = Dealers_Deck,dealer_t
                         break
             while True:
                 if dealer_total < 18:
-                    dealer_total = calculate(Dealers_Deck,dealer_total)
+                    dealer_total= calculate(Dealers_Deck,dealer_total)
                     if dealer_total > 21:
                         dealer_total = 0
                         break
                 else:
                     break
             print(f"Dealers total is {dealer_total}")
+            print(f"Your bet was {bet}")
             if dealer_total > total:
                 print("Dealers win")
-                cash -= bet
+                Cash -= bet
             elif dealer_total < total:
                 print("You win")
-                cash += bet
+                Cash += bet
             else:
                 print("You Tied")
                 pass
-    return cash
+    return deck,total,Cash,Chip,SinkHole
         
             
-def Dealchips(Chips=Chip,Cash=Cash,Chipmult = Chipmult,sinkhole = SinkHole):
-    Chips = round(Chipmult * (Cash/sinkhole))
-    return Chips
-def store(chip=Chip,boons=Boons,pot_boon=potentialboons,deck=deck,pot_deck=pot_deck):
+def DealChip(Cash,Chip=Chip,Chipmult = Chipmult,sinkhole = SinkHole):
+    chipqouta = Cash/sinkhole
+    print(f"This is your Cash {Cash}")
+    print(f"This is your chips before multipler {chipqouta}")
+    Chip += round(Chipmult * chipqouta)
+    print(Chip)
+    return Chip
+def store(Chip,boons=Boons,pot_boon=potentialboons,deck=deck,pot_deck=pot_deck):
     storeop = []
     for x in range (0,3):
         if random.randrange(1,2) == 1:
@@ -110,54 +123,56 @@ def store(chip=Chip,boons=Boons,pot_boon=potentialboons,deck=deck,pot_deck=pot_d
     z = storeop[2]
     zpr= figurePrice(z)
     print("Here are you options if you do not want to buy something type exit.")
-    print(f"1-{x} for {xpr} chips\n2-{y} for {ypr} chips \n 3-{z} for {zpr} chips")
+    print(f"1-{x} for {xpr} Chip\n2-{y} for {ypr} Chip \n3-{z} for {zpr} Chip")
     while True:
         ply_inp = input("")
         if ply_inp == "Exit" or ply_inp == "exit" or ply_inp == "e" or ply_inp == "E":
             break
         if ply_inp == "1" or ply_inp == x:
-            if zpr <= chips:
+            if xpr <= Chip:
                 if x in pot_boon:
-                    chips -= xpr
+                    Chip -= xpr
                     boons.append(x)
                     pot_boon.remove(x)
                 elif x in pot_deck:
-                    chips -= xpr
+                    Chip -= xpr
                     deck.append(x)
                     pot_deck.remove(x)
                 else:
                     print("What how did you do this")
             else:
                 print("You can not afford this")
+                print(f"You currently have only {Chip} and it costs {xpr}")
         elif ply_inp == "2" or ply_inp == y:
-            if zpr <= chips:
+            if ypr <= Chip:
                 if y in pot_boon:
-                    chips -= ypr
+                    Chip -= ypr
                     boons.append(y)
                     pot_boon.remove(y)
                 elif y in pot_deck:
-                    chips -= ypr
+                    Chip -= ypr
                     deck.append(y)
                     pot_deck.remove(y)
                 else:
                     print("What how did you do this")
             else:
                 print("You can not afford this")
+                print(f"You currently have only {Chip} and it costs {ypr}")
         elif ply_inp == "3" or ply_inp == z:
-            if zpr <= chips:
+            if zpr <= Chip:
                 if z in pot_boon:
-                    chips -= zpr
+                    Chip -= zpr
                     boons.append(z)
                     pot_boon.remove(z)
                 elif x in pot_deck:
-                    chips -= zpr
+                    Chip -= zpr
                     deck.append(z)
                     pot_deck.remove(z)
                 else:
                     print("What how did you do this")
+                    print(f"You currently have only {Chip} and it costs {zpr}")
             else:
                 print("You can not afford this")
-            
 
     
     print()
@@ -166,13 +181,13 @@ def figurePrice(Item):
         price = 5
     elif Item == "Token+":
         price = 3
-    elif Item == "cash+":
+    elif Item == "Cash+":
             price = 3
     elif Item == "Daily double+":
         price = 3
     elif Item == "-3":
         price = 2
-    elif Item == "Jocker":
+    elif Item == "Joker":
         price = 1
     elif Item == "Cashback":
         price = 5
@@ -184,18 +199,15 @@ def figurePrice(Item):
     return price
         
 
-potentialboons = ["Chip mult","Token+","cash+","Daily Double"]
-pot_deck = ["-3","Jocker","Cashback"]
-
 while True:
-    Cash = blackjack(deck,total,Cash,Dealers_Deck,dealer_total,SinkHole)
+    deck,total,Cash,Chip,SinkHole = blackjack(deck,total,Cash,Dealers_Deck,dealer_total,SinkHole)
     if Cash == 0:
         break
     if Cash < SinkHole:
         break
-    chips = Dealchips()
-    print(f"You currently have {chips} chips.")
-    store()
+    Chip = DealChip(Cash)
+    print(f"You currently have {Chip} Chips.")
+    store(Chip)
     print(f"This is your deck {deck} \n This are your boons {Boons}")
     SinkHole = SinkHole * 1.5
     SinkHole = round(SinkHole)
