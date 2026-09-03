@@ -11,15 +11,10 @@ dealer_total = 0
 Cash = 50
 Chip = 0
 Chipmult = 3
-def roll(deck):
-    card = deck[random.randrange(0,len(deck))]
-    return card
 def calculate(deck,total):
-    card = roll(deck)
-    print(card)
+    card = deck[random.randrange(0,len(deck))]
     try:
         total += int(card)
-        print("tried")
     except:
         pass
     return total,card
@@ -41,7 +36,7 @@ def cardeffectcalc(card,deck=deck,Cash=Cash,Chip=Chip,Quota=SinkHole):
             Quota = Quota / 2
             print(f"You drew Death it cut your qouta in half")
             print(f"Your current quote is {Quota}")
-    return deck,total,Cash,Chip,SinkHole
+    return deck,Cash,Chip,SinkHole
     
 def blackjack(deck=deck,total=total,Cash=Cash,Dealerdeck = Dealers_Deck,dealer_total = dealer_total,SinkHole=SinkHole,Chip = Chip):
     print(f"The current quote you have to reach is {SinkHole}$.")
@@ -64,9 +59,11 @@ def blackjack(deck=deck,total=total,Cash=Cash,Dealerdeck = Dealers_Deck,dealer_t
                 except:
                     print("That is not an Accepted number")
             total,card = calculate(deck,total)
-            deck,total,Cash,Chip,SinkHole = cardeffectcalc(card)
+            total = int(total)
+            deck,Cash,Chip,SinkHole = cardeffectcalc(card)
             total,card = calculate(deck,total)
-            deck,total,Cash,Chip,SinkHole = cardeffectcalc(card)
+            total = int(total)
+            deck,Cash,Chip,SinkHole = cardeffectcalc(card)
             print(f"Your total is {total}")
             while True:
                 action = input("Stand or Hit:")
@@ -74,7 +71,7 @@ def blackjack(deck=deck,total=total,Cash=Cash,Dealerdeck = Dealers_Deck,dealer_t
                     break
                 if action == "Hit" or action == "hit":
                     total,card = calculate(deck,total)
-                    deck,total,Cash,Chip,SinkHole = cardeffectcalc(card)
+                    deck,Cash,Chip,SinkHole = cardeffectcalc(card)
                     print(total)
                     if total > 21:
                         print("You Busted")
@@ -83,6 +80,7 @@ def blackjack(deck=deck,total=total,Cash=Cash,Dealerdeck = Dealers_Deck,dealer_t
             while True:
                 if dealer_total < 18:
                     dealer_total= calculate(Dealers_Deck,dealer_total)
+                    dealer_total = int(dealer_total)
                     if dealer_total > 21:
                         dealer_total = 0
                         break
