@@ -3,7 +3,7 @@ import random
 deck = ["1","2","3","4","5","6","7","8","9","10"]
 Dealers_Deck = ["1","2","3","4","5","6","7","8","9","10"]
 Boons = []
-potentialboons = ["Chip mult","Token+"]
+potentialboons = ["Chip mult","Token+","Slasher","Coming Death"]
 pot_deck = ["-3","Joker","Cashback","Death","Twins"]
 SinkHole = 75
 total = 0
@@ -11,13 +11,13 @@ dealer_total = 0
 Cash = 50
 Chip = 0
 Chipmult = 3
-def calculate(deck,total):
-    card = deck[random.randrange(0,len(deck))]
+def calculate(Deck,Total):
+    card = Deck[random.randrange(0,len(Deck))]
     try:
-        total += int(card)
+        Total += int(card)
     except:
         pass
-    return total,card
+    return Total,card
 def cardeffectcalc(card,deck=deck,Cash=Cash,Chip=Chip,Quota=SinkHole):
     if card == "Cashback":
             Cash += 20
@@ -33,15 +33,23 @@ def cardeffectcalc(card,deck=deck,Cash=Cash,Chip=Chip,Quota=SinkHole):
             Cash += JVC
             print(f"You drew the Joker card it gave you {jokervaluechip} Chip and {JVC} Cash")
     elif card == "Death":
-            Quota = Quota / 2
-            print(f"You drew Death it cut your qouta in half")
-            print(f"Your current quote is {Quota}")
-    return deck,Cash,Chip,SinkHole
+        print(f"You drew Death it cut your qouta by 1/4th")
+        print(f"Your qouta before the cut was {Quota}")
+        Quota = Quota * 3
+        Quota = Quota / 4
+        Quota = round(Quota)
+        print(f"Your current quote is {Quota}")
+    return deck,Cash,Chip,Quota
+def boonInteraction(boons,deck=deck,Cash=Cash,Chip=Chip,Quota=SinkHole):
+    potentialboons = ["Chip mult","Token+","Slasher","Coming Death"]
+    if "Token+" in boons:
+        pass
+    pass
     
 def blackjack(deck=deck,total=total,Cash=Cash,Dealerdeck = Dealers_Deck,dealer_total = dealer_total,SinkHole=SinkHole,Chip = Chip):
     print(f"The current quote you have to reach is {SinkHole}$.")
     for x in range(0,3):
-        if Cash == 0:
+        if Cash == 0 or Cash < 0:
             pass
         else:
             total = 0
@@ -60,10 +68,10 @@ def blackjack(deck=deck,total=total,Cash=Cash,Dealerdeck = Dealers_Deck,dealer_t
                     print("That is not an Accepted number")
             total,card = calculate(deck,total)
             total = int(total)
-            deck,Cash,Chip,SinkHole = cardeffectcalc(card)
+            deck,Cash,Chip,SinkHole = cardeffectcalc(card,deck=deck,Cash=Cash,Chip=Chip,Quota=SinkHole)
             total,card = calculate(deck,total)
             total = int(total)
-            deck,Cash,Chip,SinkHole = cardeffectcalc(card)
+            deck,Cash,Chip,SinkHole = cardeffectcalc(card,deck=deck,Cash=Cash,Chip=Chip,Quota=SinkHole)
             print(f"Your total is {total}")
             while True:
                 action = input("Stand or Hit:")
@@ -71,7 +79,7 @@ def blackjack(deck=deck,total=total,Cash=Cash,Dealerdeck = Dealers_Deck,dealer_t
                     break
                 if action == "Hit" or action == "hit":
                     total,card = calculate(deck,total)
-                    deck,Cash,Chip,SinkHole = cardeffectcalc(card)
+                    deck,Cash,Chip,SinkHole = cardeffectcalc(card,deck=deck,Cash=Cash,Chip=Chip,Quota=SinkHole)
                     print(total)
                     if total > 21:
                         print("You Busted")
@@ -79,8 +87,7 @@ def blackjack(deck=deck,total=total,Cash=Cash,Dealerdeck = Dealers_Deck,dealer_t
                         break
             while True:
                 if dealer_total < 18:
-                    dealer_total= calculate(Dealers_Deck,dealer_total)
-                    dealer_total = int(dealer_total)
+                    dealer_total,Dealer_card = calculate(Dealerdeck,dealer_total)
                     if dealer_total > 21:
                         dealer_total = 0
                         break
@@ -88,6 +95,7 @@ def blackjack(deck=deck,total=total,Cash=Cash,Dealerdeck = Dealers_Deck,dealer_t
                     break
             print(f"Dealers total is {dealer_total}")
             print(f"Your bet was {bet}")
+            print(Cash)
             if dealer_total > total:
                 print("Dealers win")
                 Cash -= bet
@@ -110,7 +118,8 @@ def DealChip(Cash,Chip=Chip,Chipmult = Chipmult,sinkhole = SinkHole):
 def store(Chip,boons=Boons,pot_boon=potentialboons,deck=deck,pot_deck=pot_deck):
     storeop = []
     for x in range (0,3):
-        if random.randrange(1,2) == 1:
+        random_num = random.randrange(1,2)
+        if random_num == 1:
             storeop.append(pot_deck[random.randrange(0,len(pot_deck))])
         else:
             storeop.append(pot_boon[random.randrange(0,len(pot_boon))])
@@ -162,13 +171,12 @@ def store(Chip,boons=Boons,pot_boon=potentialboons,deck=deck,pot_deck=pot_deck):
                     Chip -= zpr
                     boons.append(z)
                     pot_boon.remove(z)
-                elif x in pot_deck:
+                elif z in pot_deck:
                     Chip -= zpr
                     deck.append(z)
                     pot_deck.remove(z)
                 else:
                     print("What how did you do this")
-                    print(f"You currently have only {Chip} and it costs {zpr}")
             else:
                 print("You can not afford this")
 
@@ -203,7 +211,7 @@ while True:
         break
     if Cash < SinkHole:
         break
-    Chip = DealChip(Cash)
+    Chip += DealChip(Cash)
     print(f"You currently have {Chip} Chips.")
     store(Chip)
     print(f"This is your deck {deck} \n This are your boons {Boons}")
