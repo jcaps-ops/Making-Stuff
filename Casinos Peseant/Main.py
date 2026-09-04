@@ -3,7 +3,7 @@ import random
 deck = ["1","2","3","4","5","6","7","8","9","10"]
 Dealers_Deck = ["1","2","3","4","5","6","7","8","9","10"]
 Boons = []
-potentialboons = ["Chip mult","Token+","Slasher","Coming Death"]
+potentialboons = ["Chip mult","Token+","Slasher","Coming Death","Daily double"]
 pot_deck = ["-3","Joker","Cashback","Death","Twins"]
 SinkHole = 75
 total = 0
@@ -41,12 +41,45 @@ def cardeffectcalc(card,deck=deck,Cash=Cash,Chip=Chip,Quota=SinkHole):
         print(f"Your current quote is {Quota}")
     return deck,Cash,Chip,Quota
 def boonInteraction(boons,deck=deck,Cash=Cash,Chip=Chip,Quota=SinkHole):
-    potentialboons = ["Chip mult","Token+","Slasher","Coming Death"]
-    if "Token+" in boons:
-        pass
-    pass
     
-def blackjack(deck=deck,total=total,Cash=Cash,Dealerdeck = Dealers_Deck,dealer_total = dealer_total,SinkHole=SinkHole,Chip = Chip):
+    if "Token+" in boons:
+        Chip += 1
+        print("Token plus gave you plus 1 token")
+    if "Slasher" in boons:
+        while True:
+            ply_inp = input("Please put in what card to delete")
+            try:
+                deck.remove(ply_inp)
+                break
+            except:
+                print("That is not a card in your deck")
+        while True:
+            ply_inp = input("Please put in what number card to add")
+            try:
+                plyint = plyint(ply_inp)
+                if ply_inp > 0:
+                    str(ply_inp)
+                    deck.append(ply_inp)
+                    break
+                else:
+                    print("Your card can not be a negative")
+            except:
+                print("That a acceptable card")
+    if "Coming Death" in boons:
+        Quota *= 1.25
+        Quota = round(Quota)
+        pc = Chip
+        Chip *= 1.5
+        Chip = round(Chip)
+        print(f"Coming death has activated making your qouta {Quota} but gave you {Chip-pc}")
+    if "Daily double" in boons:
+        rand = random.randrange(1,10)
+        if rand == 1:
+            pc = Cash
+            Cash = Cash * 2
+            print(f"Your daily double kicked in earning you {Cash - pc}")
+    return boons,deck,Cash,Chip,Quota
+def blackjack(deck=deck,total=total,Cash=Cash,Dealerdeck = Dealers_Deck,dealer_total = dealer_total,SinkHole=SinkHole,Chip = Chip,boons=Boons):
     print(f"The current quote you have to reach is {SinkHole}$.")
     for x in range(0,3):
         if Cash == 0 or Cash < 0:
@@ -105,6 +138,7 @@ def blackjack(deck=deck,total=total,Cash=Cash,Dealerdeck = Dealers_Deck,dealer_t
             else:
                 print("You Tied")
                 pass
+            boons,deck,Cash,Chip,SinkHole = boonInteraction(boons,deck=deck,Cash=Cash,Chip=Chip,Quota=SinkHole)
     return deck,total,Cash,Chip,SinkHole
         
             
@@ -118,7 +152,7 @@ def DealChip(Cash,Chip=Chip,Chipmult = Chipmult,sinkhole = SinkHole):
 def store(Chip,boons=Boons,pot_boon=potentialboons,deck=deck,pot_deck=pot_deck):
     storeop = []
     for x in range (0,3):
-        random_num = random.randrange(1,2)
+        random_num = random.randrange(1,3)
         if random_num == 1:
             storeop.append(pot_deck[random.randrange(0,len(pot_deck))])
         else:
@@ -179,6 +213,9 @@ def store(Chip,boons=Boons,pot_boon=potentialboons,deck=deck,pot_deck=pot_deck):
                     print("What how did you do this")
             else:
                 print("You can not afford this")
+    if "chip mult" in boons:
+        Chipmult += 2
+        boons.remove("chip mult")
 
     
     print()
@@ -201,6 +238,8 @@ def figurePrice(Item):
             price = 7
     elif Item == "Twins":
             price = 10
+    elif Item == "Coming Death":
+        price = 1
 
     return price
         
