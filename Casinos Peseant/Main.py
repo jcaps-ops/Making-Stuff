@@ -220,7 +220,7 @@ def store(Chip,boons=Boons,pot_boon=potentialboons,deck=deck,pot_deck=pot_deck):
     
     print()
 def figurePrice(Item):
-    if Item == "Chip,mult":
+    if Item == "Chip mult":
         price = 5
     elif Item == "Token+":
         price = 3
