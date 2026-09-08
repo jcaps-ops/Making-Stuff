@@ -47,16 +47,19 @@ def boonInteraction(boons,deck=deck,Cash=Cash,Chip=Chip,Quota=SinkHole):
         print("Token plus gave you plus 1 token")
     if "Slasher" in boons:
         while True:
-            ply_inp = input("Please put in what card to delete")
+            ply_inp = input("Please put in what card to delete or if you do not put in None")
             try:
                 deck.remove(ply_inp)
                 break
             except:
-                print("That is not a card in your deck")
+                if ply_inp == "None" or ply_inp == "none":
+                    break
+                else:
+                    print("That is not a card in your deck")
         while True:
             ply_inp = input("Please put in what number card to add")
             try:
-                plyint = plyint(ply_inp)
+                plyint = int(ply_inp)
                 if ply_inp > 0:
                     str(ply_inp)
                     deck.append(ply_inp)
@@ -219,6 +222,7 @@ def store(Chip,boons=Boons,pot_boon=potentialboons,deck=deck,pot_deck=pot_deck):
 
     
     print()
+    
 def figurePrice(Item):
     if Item == "Chip mult":
         price = 5
@@ -226,7 +230,7 @@ def figurePrice(Item):
         price = 3
     elif Item == "Cash+":
             price = 3
-    elif Item == "Daily double+":
+    elif Item == "Daily double":
         price = 3
     elif Item == "-3":
         price = 2
@@ -240,6 +244,11 @@ def figurePrice(Item):
             price = 10
     elif Item == "Coming Death":
         price = 1
+    elif Item == "Slasher":
+        price = 4
+    else:
+        print(f"The {Item} does not have a price")
+        price = 0
 
     return price
         
